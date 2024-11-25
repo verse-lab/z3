@@ -1313,6 +1313,9 @@ namespace qe {
 
     void i_solver_context::collect_statistics(statistics& st) const {
        // tbd
+        for (unsigned i = 0; i < m_plugins.size(); ++i) {
+            m_plugins[i]->collect_statistics(st);
+        }
     }
 
     typedef ref_vector_ptr_hash<expr, ast_manager> expr_ref_vector_hash;

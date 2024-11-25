@@ -21,6 +21,7 @@ Revision History:
 
 #include "ast/ast.h"
 #include "smt/smt_types.h"
+#include "util/statistics.h"
 #include <tuple>
 
 namespace smt {
@@ -57,6 +58,8 @@ namespace smt {
         virtual void reset() = 0;
 
         virtual void display(std::ostream& out) = 0;
+
+        virtual void collect_statistics(::statistics & st) = 0;
         
         virtual void on_match(quantifier * q, app * pat, unsigned num_bindings, enode * const * bindings, unsigned max_generation, vector<std::tuple<enode *, enode *>> & used_enodes) = 0;
         

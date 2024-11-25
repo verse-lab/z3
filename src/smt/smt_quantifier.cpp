@@ -27,6 +27,7 @@ Revision History:
 #include "smt/mam.h"
 #include "smt/qi_queue.h"
 #include "util/obj_hashtable.h"
+#include "util/stopwatch.h"
 
 namespace smt {
 
@@ -382,6 +383,11 @@ namespace smt {
             return m_plugin->check_model(m, root2value);
         }
 
+      void collect_statistics(::statistics & st) const {
+        m_plugin->collect_statistics(st);
+        m_qi_queue.collect_statistics(st);
+      }
+
     };
 
     quantifier_manager::quantifier_manager(context & ctx, smt_params & fp, params_ref const & p) {
@@ -511,7 +517,7 @@ namespace smt {
     }
 
     void quantifier_manager::collect_statistics(::statistics & st) const {
-        m_imp->m_qi_queue.collect_statistics(st);
+        m_imp->collect_statistics(st);
     }
 
     void quantifier_manager::reset_statistics() {
@@ -545,6 +551,7 @@ namespace smt {
         unsigned                    m_new_enode_qhead;
         unsigned                    m_lazy_matching_idx;
         bool                        m_active;
+        stopwatch                   m_propagate_watch;
     public:
         default_qm_plugin():
             m_qm(nullptr),
@@ -705,6 +712,7 @@ namespace smt {
         }
 
         void propagate() override {
+            m_propagate_watch.start();
             m_mam->match();
             if (!m_context->relevancy() && use_ematching()) {
                 ptr_vector<enode>::const_iterator it  = m_context->begin_enodes();
@@ -722,6 +730,7 @@ namespace smt {
                     }
                 }
             }
+           m_propagate_watch.stop();            
         }
 
         quantifier_manager::check_model_result
@@ -762,6 +771,11 @@ namespace smt {
             }
             return FC_DONE;
         }
+
+      void collect_statistics(::statistics & st) override {
+        m_mam->collect_statistics(st);
+        st.update("qm-manager-propagate-time", m_propagate_watch.get_seconds());
+      }
 
     };
 

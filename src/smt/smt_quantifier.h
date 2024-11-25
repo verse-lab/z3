@@ -163,6 +163,9 @@ namespace smt {
         */
         virtual void adjust_model(proto_model * m) = 0;
 
+        virtual void collect_statistics(::statistics & st)  = 0;
+
+
         /**
            \brief Core invokes this method to check whether the candidate interpretation
            satisfies the quantifiers in the manager.

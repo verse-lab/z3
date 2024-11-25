@@ -280,6 +280,9 @@ namespace smt {
         ast_manager & _m = m();
         smt_params & fps = m_imp->fparams();
         params_ref ps    = m_imp->params();
+        // save statistics
+        m_imp->collect_statistics(m_stats);
+        // clear imp
         m_imp->~imp();
         m_imp = new (m_imp) imp(_m, fps, ps);        
     }
@@ -373,6 +376,9 @@ namespace smt {
     }
 
     void kernel::collect_statistics(::statistics & st) const {
+        // copy over stored stats
+        st.copy(m_stats);
+        // add any new stats since then
         m_imp->collect_statistics(st);
     }
         

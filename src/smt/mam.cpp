@@ -3120,6 +3120,8 @@ namespace smt {
         enode *                     m_r1; // temp field
         enode *                     m_r2; // temp field
 
+        stopwatch                  m_match_watch;
+
         class add_shared_enode_trail;
         friend class add_shared_enode_trail;
 
@@ -3876,7 +3878,12 @@ namespace smt {
             }
         }
 
+        void collect_statistics(::statistics& st) override {
+           st.update("mam-match-time", m_match_watch.get_seconds());
+        }
+
         void match() override {
+            m_match_watch.start();
             TRACE("trigger_bug", tout << "match\n"; display(tout););
             for (code_tree* t : m_to_match) {
                 SASSERT(t->has_candidates());
@@ -3888,6 +3895,7 @@ namespace smt {
                 match_new_patterns();
                 m_new_patterns.reset();
             }
+            m_match_watch.stop();
         }
 
         void rematch(bool use_irrelevant) override {

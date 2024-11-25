@@ -211,6 +211,9 @@ namespace qe {
            \brief Determine whether sub-term is uninterpreted with respect to quantifier elimination.
         */
         virtual bool is_uninterpreted(app* f) { return true; }
+
+        virtual void collect_statistics(statistics & st) const { }
+
     };
 
     qe_solver_plugin* mk_datatype_plugin(i_solver_context& ctx);
